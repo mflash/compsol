@@ -1,10 +1,14 @@
+import calendar
+import numpy as np
+import matplotlib.pyplot as plt
+
 arq = open("poa_temps.txt")
 arq.readline() # Pula o cabeçalho
 
-minimas = [0] * 12
-maximas = [0] * 12
-totminimas = [0] * 12
-totmaximas = [0] * 12
+minimas = np.zeros(12)
+maximas = np.zeros(12)
+totminimas = np.zeros(12)
+totmaximas = np.zeros(12)
 
 for linha in arq.readlines():
     dados = linha.split()
@@ -30,20 +34,34 @@ for linha in arq.readlines():
 
 arq.close()
 
-mins = [k[0]/k[1] for k in zip(minimas,totminimas)]
-#print(mins)
+mins = minimas/totminimas
+print(mins)
 
-maxs = [k[0]/k[1] for k in zip(maximas,totmaximas)]
-#print(maxs)
+maxs = maximas/totmaximas
+print(maxs)
 
-ampli = [k[0]-k[1] for k in zip(maxs,mins)]
-#print(ampli)
+ampli = maxs - mins
+print(ampli)
 
-mes_menor_ind, mes_menor_temp = min(enumerate(mins), key=lambda t: t[1])
-mes_maior_ind, mes_maior_temp = max(enumerate(maxs), key=lambda t: t[1])
-ampli_ind, ampli_val = max(enumerate(ampli), key=lambda t: t[1])
+mesMenor = mins.argmin()
+mesMenorValor = mins.min()
+mesMaior = maxs.argmax()
+mesMaiorValor = mins.max()
 
-print("Mês com menor média de temperatura mínima:",mes_menor_ind+1,"(",mes_menor_temp,")")
-print("Mês com maior média de temperatura máxima:",mes_maior_ind+1,"(",mes_maior_temp,")")
-print("Mês com maior amplitude térmica:",ampli_ind+1,"(",ampli_val,")")
+ampliMaior = ampli.argmax()
+ampliMaiorValor = ampli.max()
+
+print("Mês com menor média de temperatura mínima:",mesMenor+1,"(",mesMenorValor,")")
+print("Mês com maior média de temperatura máxima:",mesMaior+1,"(",mesMaiorValor,")")
+print("Mês com maior amplitude térmica:",ampliMaior+1,"(",ampliMaiorValor,")")
+
+meses = np.linspace(1,12,12) # 1, 2, 3..., 12
+plt.xlabel("Meses")
+plt.ylabel("Médias")
+plt.xticks(np.arange(13), calendar.month_abbr[0:13])
+plt.bar(meses,mins,label="Mínimas")
+plt.bar(meses,maxs,bottom=mins,label="Máximas")
+plt.legend()
+plt.show()
+
 
